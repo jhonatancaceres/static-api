@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static JSON API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .api-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .api-section h2 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        
+        .endpoint {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #4ecdc4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .endpoint:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .test-section {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        input, button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        input {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        #jsonResponse {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .json-only-notice {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="status-indicator"></span>Static JSON API</h1>
+        
+        <div class="json-only-notice">
+            🔥 This API returns pure JSON responses when accessed programmatically!
+        </div>
+        
+        <div class="api-section">
+            <h2>📋 API Documentation</h2>
+            <p>Add <code>?format=json</code> to any URL to get pure JSON responses:</p>
+            
+            <div class="endpoint" onclick="testEndpoint('?api=users/1&format=json')">
+                GET /?api=users/1&format=json
+            </div>
+            <div class="endpoint" onclick="testEndpoint('?api=posts/2&format=json')">
+                GET /?api=posts/2&format=json
+            </div>
+            <div class="endpoint" onclick="testEndpoint('?api=products/electronics&format=json')">
+                GET /?api=products/electronics&format=json
+            </div>
+            <div class="endpoint" onclick="testEndpoint('?api=status&format=json')">
+                GET /?api=status&format=json
+            </div>
+        </div>
+        
+        <div class="api-section">
+            <h2>🧪 Test API Endpoints</h2>
+            <div class="test-section">
+                <input type="text" id="apiPath" placeholder="users/1, posts/2, products/electronics, status" value="users/1">
+                <button onclick="testAPI()">Test API</button>
+            </div>
+            
+            <div id="jsonResponse"></div>
+        </div>
+        
+        <div class="api-section">
+            <h2>💡 Usage Examples</h2>
+            <p><strong>JavaScript fetch example:</strong></p>
+            <div class="endpoint">
+                fetch('https://yourdomain.github.io/repo/?api=users/1&format=json')<br>
+                &nbsp;&nbsp;.then(response => response.json())<br>
+                &nbsp;&nbsp;.then(data => console.log(data));
+            </div>
+            
+            <p><strong>cURL example:</strong></p>
+            <div class="endpoint">
+                curl "https://yourdomain.github.io/repo/?api=users/1&format=json"
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Static data for our mock API
+        const mockData = {
+            users: {
+                1: { id: 1, name: "John Doe", email: "john@example.com", role: "admin", active: true },
+                2: { id: 2, name: "Jane Smith", email: "jane@example.com", role: "user", active: true },
+                3: { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "moderator", active: false }
+            },
+            posts: {
+                1: { id: 1, title: "Hello World", content: "This is my first post!", author: "John Doe", date: "2024-01-15", views: 156 },
+                2: { id: 2, title: "JavaScript Tips", content: "Here are some useful JS tips...", author: "Jane Smith", date: "2024-01-20", views: 243 },
+                3: { id: 3, title: "API Design", content: "Best practices for API design...", author: "Bob Johnson", date: "2024-01-25", views: 89 }
+            },
+            products: {
+                electronics: [
+                    { id: 1, name: "Smartphone", price: 699, category: "electronics", inStock: true },
+                    { id: 2, name: "Laptop", price: 1299, category: "electronics", inStock: true },
+                    { id: 3, name: "Headphones", price: 199, category: "electronics", inStock: false }
+                ],
+                books: [
+                    { id: 4, name: "JavaScript Guide", price: 29.99, category: "books", inStock: true },
+                    { id: 5, name: "Web Development", price: 39.99, category: "books", inStock: true }
+                ],
+                clothing: [
+                    { id: 6, name: "T-Shirt", price: 19.99, category: "clothing", inStock: true },
+                    { id: 7, name: "Jeans", price: 59.99, category: "clothing", inStock: false }
+                ]
+            }
+        };
+
+        // API Handler function
+        function handleAPIRequest(apiPath) {
+            const pathParts = apiPath.split('/').filter(part => part);
+            const resource = pathParts[0];
+            const param = pathParts[1];
+            
+            const response = {
+                success: true,
+                timestamp: new Date().toISOString(),
+                endpoint: apiPath,
+                data: null,
+                error: null
+            };
+            
+            try {
+                switch (resource) {
+                    case 'users':
+                        if (param && mockData.users[param]) {
+                            response.data = mockData.users[param];
+                        } else if (!param) {
+                            response.data = Object.values(mockData.users);
+                        } else {
+                            response.success = false;
+                            response.error = `User with ID '${param}' not found`;
+                            response.data = null;
+                        }
+                        break;
+                        
+                    case 'posts':
+                        if (param && mockData.posts[param]) {
+                            response.data = mockData.posts[param];
+                        } else if (!param) {
+                            response.data = Object.values(mockData.posts);
+                        } else {
+                            response.success = false;
+                            response.error = `Post with ID '${param}' not found`;
+                            response.data = null;
+                        }
+                        break;
+                        
+                    case 'products':
+                        if (param && mockData.products[param]) {
+                            response.data = mockData.products[param];
+                        } else if (!param) {
+                            response.data = Object.values(mockData.products).flat();
+                        } else {
+                            response.success = false;
+                            response.error = `Product category '${param}' not found`;
+                            response.data = null;
+                        }
+                        break;
+                        
+                    case 'status':
+                        response.data = {
+                            status: "operational",
+                            version: "1.0.0",
+                            uptime: Math.floor(Math.random() * 100) + " days",
+                            totalUsers: Object.keys(mockData.users).length,
+                            totalPosts: Object.keys(mockData.posts).length,
+                            endpoints: ["users", "posts", "products", "status"]
+                        };
+                        break;
+                        
+                    default:
+                        response.success = false;
+                        response.error = `Unknown endpoint '${resource}'. Available endpoints: users, posts, products, status`;
+                        response.data = null;
+                }
+            } catch (error) {
+                response.success = false;
+                response.error = "Internal server error";
+                response.data = null;
+            }
+            
+            return response;
+        }
+
+        // Check if this is an API request and return JSON
+        function checkForAPIRequest() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const apiPath = urlParams.get('api');
+            const format = urlParams.get('format');
+            
+            if (apiPath && format === 'json') {
+                const response = handleAPIRequest(apiPath);
+                
+                // Replace the entire page content with JSON
+                document.body.innerHTML = `<pre>${JSON.stringify(response, null, 2)}</pre>`;
+                document.body.style.background = '#1a1a1a';
+                document.body.style.color = '#00ff00';
+                document.body.style.fontFamily = 'monospace';
+                document.body.style.padding = '20px';
+                document.body.style.margin = '0';
+                
+                // Set content type header (won't work in browser but good practice)
+                document.contentType = 'application/json';
+                
+                return true;
+            }
+            return false;
+        }
+
+        // Test API function for the UI
+        function testAPI() {
+            const apiPath = document.getElementById('apiPath').value;
+            const response = handleAPIRequest(apiPath);
+            document.getElementById('jsonResponse').textContent = JSON.stringify(response, null, 2);
+        }
+
+        // Test specific endpoint
+        function testEndpoint(queryString) {
+            // Update the URL to show the API format
+            const currentUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + queryString;
+            
+            // Parse the query to get the API path
+            const params = new URLSearchParams(queryString);
+            const apiPath = params.get('api');
+            
+            if (apiPath) {
+                const response = handleAPIRequest(apiPath);
+                document.getElementById('jsonResponse').textContent = JSON.stringify(response, null, 2);
+                
+                // Show the URL that would return JSON
+                console.log('JSON API URL:', currentUrl);
+                
+                // Update the input field
+                document.getElementById('apiPath').value = apiPath;
+            }
+        }
+
+        // Initialize the app
+        function init() {
+            // Check if this is an API request first
+            if (checkForAPIRequest()) {
+                return; // Stop here if it's a JSON API request
+            }
+            
+            // Otherwise, show the normal UI
+            testAPI(); // Load default data
+        }
+
+        // Start the app when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
